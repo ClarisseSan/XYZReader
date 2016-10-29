@@ -19,7 +19,10 @@
     <color name="photo_placeholder">#ccc</color>
 
     <color name="colorPrimary">#9C27B0</color>
-    <color name="colorPrimaryDark">#7B1FA2</color>
+    <color name="colorPrimaryDark">#8E24AA</color>
     <color name="colorAccent">#FFC107</color>
-    <color name="colorFont">#55552b</color>
+    <color name="colorFont">#ffffb3</color>
+    <color name="colorDetailBackground">#2F322B</color>
+    <color name="colorPink">#EC407A</color>
+
 </resources>
