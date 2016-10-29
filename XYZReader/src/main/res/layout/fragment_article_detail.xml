@@ -23,7 +23,7 @@
                     android:id="@+id/photo"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/pic_detail_height"
-                    android:src="@drawable/bg_night"
+                    android:src="@drawable/photo_background_protection"
                     android:adjustViewBounds="true"
                     android:scaleType="centerCrop"
                      />

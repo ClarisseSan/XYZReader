@@ -21,7 +21,7 @@
             android:id="@+id/thumbnail"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/bg_night" />
+            android:background="@drawable/empty_detail" />
 
         <TextView
             android:id="@+id/article_title"
