@@ -1,6 +1,7 @@
 package com.example.xyzreader.ui;
 
 import android.animation.ValueAnimator;
+import android.annotation.TargetApi;
 import android.app.LoaderManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -17,6 +18,8 @@ import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
+import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -46,9 +49,10 @@ public class ArticleListActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_article_list);
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        mImageLogo = (ImageView) findViewById(R.id.image_logo);
+
 
         startLogoAnimation();
+        startListAnimation();
 
         //final View toolbarContainerView = findViewById(R.id.toolbar_container);
 
@@ -62,8 +66,40 @@ public class ArticleListActivity extends AppCompatActivity implements
         }
     }
 
+    private void startListAnimation() {
+
+        ViewGroup root = (ViewGroup) findViewById(R.id.root);
+        int count = root.getChildCount();
+        float offset = getResources().getDimensionPixelSize(R.dimen.offset_y);
+
+        Interpolator interpolator = AnimationUtils.loadInterpolator(this, android.R.interpolator.linear_out_slow_in);
+
+        // loop over the children setting an increasing translation y but the same animation
+        // duration + interpolation
+        for (int i = 0; i < count; i++) {
+            View view = root.getChildAt(i);
+            view.setVisibility(View.VISIBLE);
+            view.setTranslationY(offset);
+            view.setAlpha(0.85f);
+            // then animate back to natural position
+            view.animate()
+                    .translationY(0f)
+                    .alpha(1f)
+                    .setInterpolator(interpolator)
+                    .setDuration(1000L)
+                    .start();
+            // increase the offset distance for the next view
+            offset *= 1.5f;
+        }
+
+    }
+
     private void startLogoAnimation() {
-        final long DEFAULT_ANIMATION_DURATION = 2000L;
+
+        mImageLogo = (ImageView) findViewById(R.id.image_logo);
+
+
+        final long DEFAULT_ANIMATION_DURATION = 1500L;
 
         int appBarHeight = (int) getResources().getDimension(R.dimen.app_bar_height);
 
