@@ -1,5 +1,6 @@
 package com.example.xyzreader.ui;
 
+import android.animation.ValueAnimator;
 import android.app.LoaderManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -9,16 +10,15 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
-import android.util.TypedValue;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.LinearInterpolator;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.xyzreader.R;
@@ -38,6 +38,7 @@ public class ArticleListActivity extends AppCompatActivity implements
     private Toolbar mToolbar;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private RecyclerView mRecyclerView;
+    private ImageView mImageLogo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +46,9 @@ public class ArticleListActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_article_list);
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        mImageLogo = (ImageView) findViewById(R.id.image_logo);
 
+        startLogoAnimation();
 
         //final View toolbarContainerView = findViewById(R.id.toolbar_container);
 
@@ -57,6 +60,37 @@ public class ArticleListActivity extends AppCompatActivity implements
         if (savedInstanceState == null) {
             refresh();
         }
+    }
+
+    private void startLogoAnimation() {
+        final long DEFAULT_ANIMATION_DURATION = 2000L;
+
+        int appBarHeight = (int) getResources().getDimension(R.dimen.app_bar_height);
+
+
+        //Create an instance of ValueAnimator by calling the static method ofFloat.
+        // In this case, the values start at 0 and end with appBarHeight.
+        // Android starts screen coordinates at the top-left corner,
+        // it moves  top to bottom.
+        ValueAnimator valueAnimator = ValueAnimator.ofFloat(0, appBarHeight);
+
+        //ValueAnimator calls this listener with every update to the animated value
+        valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                //Get the current value from the animator and cast it to float;
+                // current value type is float because you created the ValueAnimator with ofFloat.
+                float value = (float) animation.getAnimatedValue();
+                //Change the image's position by using the setTranslationY().
+                mImageLogo.setTranslationY(value/3);
+            }
+        });
+
+        //Set up the animator’s duration and interpolator.
+        valueAnimator.setInterpolator(new LinearInterpolator());
+        valueAnimator.setDuration(DEFAULT_ANIMATION_DURATION);
+        //start animation
+        valueAnimator.start();
     }
 
     private void refresh() {
