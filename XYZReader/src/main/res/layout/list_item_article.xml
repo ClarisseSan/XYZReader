@@ -23,7 +23,8 @@
             android:layout_height="wrap_content"
             android:scaleType="centerCrop"
             android:adjustViewBounds="true"
-            android:background="@drawable/empty_detail" />
+            android:background="@drawable/empty_detail"
+            android:transitionName="@string/transition_thumbnail"/>
 
         <LinearLayout
             android:layout_width="match_parent"

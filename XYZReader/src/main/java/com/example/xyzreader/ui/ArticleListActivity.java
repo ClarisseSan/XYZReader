@@ -1,6 +1,9 @@
 package com.example.xyzreader.ui;
 
+import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
+import android.app.Activity;
+import android.app.ActivityOptions;
 import android.app.LoaderManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -8,6 +11,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.Loader;
 import android.database.Cursor;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -140,7 +145,7 @@ public class ArticleListActivity extends AppCompatActivity implements
 
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
-        Adapter adapter = new Adapter(cursor);
+        Adapter adapter = new Adapter(cursor, ArticleListActivity.this);
         adapter.setHasStableIds(true);
         mRecyclerView.setAdapter(adapter);
         int columnCount = getResources().getInteger(R.integer.list_column_count);
@@ -155,9 +160,11 @@ public class ArticleListActivity extends AppCompatActivity implements
 
     private class Adapter extends RecyclerView.Adapter<ViewHolder> {
         private Cursor mCursor;
+        private Activity mHost;
 
-        public Adapter(Cursor cursor) {
+        public Adapter(Cursor cursor, Activity activity) {
             mCursor = cursor;
+            mHost = activity;
         }
 
         @Override
@@ -173,8 +180,17 @@ public class ArticleListActivity extends AppCompatActivity implements
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    startActivity(new Intent(Intent.ACTION_VIEW,
-                            ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition()))));
+
+                    Uri contentUri = ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition()));
+                    Intent intent = new Intent(mHost, ArticleDetailActivity.class);
+                    intent.setData(contentUri);
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        mHost.startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(
+                                mHost, vh.thumbnailView, vh.thumbnailView.getTransitionName()).toBundle());
+                    } else {
+                        mHost.startActivity(intent);
+                    }
                 }
             });
             return vh;
@@ -196,7 +212,36 @@ public class ArticleListActivity extends AppCompatActivity implements
                     ImageLoaderHelper.getInstance(ArticleListActivity.this).getImageLoader());
             holder.thumbnailView.setAspectRatio(mCursor.getFloat(ArticleLoader.Query.ASPECT_RATIO));
 
-            startListItemAnimation(holder.cardView);
+            //this animation only supports devices with API 21+
+            if (Build.VERSION.SDK_INT >= 21) {
+                startListItemAnimation(holder.cardView);
+            }
+
+        }
+
+
+        public void changeSize(View view, View card) {
+
+             final float LARGE_SCALE = 1.5f;
+             boolean symmetric = true;
+             boolean small = true;
+
+            Interpolator interpolator = AnimationUtils.loadInterpolator(mHost, android.R
+                    .interpolator.fast_out_slow_in);
+            ObjectAnimator scaleX = ObjectAnimator.ofFloat(card, View.SCALE_X, (small ? LARGE_SCALE : 1f));
+            scaleX.setInterpolator(interpolator);
+            scaleX.setDuration(symmetric ? 300L : 200L);
+            ObjectAnimator scaleY = ObjectAnimator.ofFloat(card, View.SCALE_Y, (small ? LARGE_SCALE : 1f));
+            scaleY.setInterpolator(interpolator);
+            scaleY.setDuration(300L);
+            scaleX.start();
+            scaleY.start();
+
+            // toggle the state so that we switch between large/small and symmetric/asymmetric
+            small = !small;
+            if (small) {
+                symmetric = !symmetric;
+            }
         }
 
         private void startListItemAnimation(CardView cardView) {
@@ -239,13 +284,13 @@ public class ArticleListActivity extends AppCompatActivity implements
         }
     }
 
-     static class ViewHolder extends RecyclerView.ViewHolder {
-         DynamicHeightNetworkImageView thumbnailView;
-         TextView titleView;
-         TextView subtitleView;
-         CardView cardView;
+    static class ViewHolder extends RecyclerView.ViewHolder {
+        DynamicHeightNetworkImageView thumbnailView;
+        TextView titleView;
+        TextView subtitleView;
+        CardView cardView;
 
-         ViewHolder(View view) {
+        ViewHolder(View view) {
             super(view);
             thumbnailView = (DynamicHeightNetworkImageView) view.findViewById(R.id.thumbnail);
             titleView = (TextView) view.findViewById(R.id.article_title);
