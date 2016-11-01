@@ -1,5 +1,6 @@
 package com.example.xyzreader.ui;
 
+import android.animation.ObjectAnimator;
 import android.app.Fragment;
 import android.app.LoaderManager;
 import android.content.Intent;
@@ -47,6 +48,7 @@ public class ArticleDetailFragment extends Fragment implements
     private Cursor mCursor;
     private long mItemId;
     private View mRootView;
+    private ViewGroup viewGroup;
     private int mMutedColor = 0xFF333333;
     private ObservableScrollView mScrollView;
     private DrawInsetsFrameLayout mDrawInsetsFrameLayout;
@@ -150,17 +152,35 @@ public class ArticleDetailFragment extends Fragment implements
             }
         });
 
+         viewGroup = (ViewGroup) mRootView.findViewById(R.id.root_content);
+
+
         bindViews();
         updateStatusBar();
-        startZoomInAnimation(mRootView, mPhotoView);
+        startZoomInAnimation(mPhotoView);
+        startContentAnimation(viewGroup);
         return mRootView;
     }
 
-    public void startZoomInAnimation(View view, View imgView) {
+    public void startZoomInAnimation(View imgView) {
         Animation zoom_out = AnimationUtils.loadAnimation(getActivity(), R.anim.zoom_out);
         imgView.startAnimation(zoom_out);
     }
 
+    public void startContentAnimation(ViewGroup viewGroup){
+        final long DEFAULT_ANIMATION_DURATION = 1500L;
+
+        int mScreenHeight = 20;
+
+        // If you only need to animate a single property of a single object use ObjectAnimator
+        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(viewGroup, "translationY",
+                0, -mScreenHeight);
+        // set the duration for the animation and start it.
+        objectAnimator.setDuration(DEFAULT_ANIMATION_DURATION);
+        objectAnimator.setStartDelay(5000L);
+        objectAnimator.start();
+
+    }
 
     private void updateStatusBar() {
         int color = 0;
