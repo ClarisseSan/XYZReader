@@ -153,8 +153,6 @@ public class ArticleDetailFragment extends Fragment implements
         });
 
         viewGroup = (ViewGroup) mRootView.findViewById(R.id.root_content);
-        ObservableScrollView observableScrollView = (ObservableScrollView) mRootView.findViewById(R.id.scrollview);
-
 
         bindViews();
         updateStatusBar();

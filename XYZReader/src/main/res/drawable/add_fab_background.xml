@@ -21,4 +21,15 @@
         </shape>
     </item>
     <item android:drawable="@drawable/white_selectable_item_background_circle" />
+
+    <selector>
+    <item
+        android:elevation="12dp"
+        android:state_pressed="true"/>
+    <item
+        android:elevation="6dp"
+        android:state_pressed="false"/>
+
+</selector>
+
 </layer-list>
