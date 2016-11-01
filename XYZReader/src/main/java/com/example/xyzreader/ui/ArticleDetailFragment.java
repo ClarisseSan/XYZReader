@@ -152,13 +152,13 @@ public class ArticleDetailFragment extends Fragment implements
             }
         });
 
-         viewGroup = (ViewGroup) mRootView.findViewById(R.id.root_content);
+        viewGroup = (ViewGroup) mRootView.findViewById(R.id.root_content);
+        ObservableScrollView observableScrollView = (ObservableScrollView) mRootView.findViewById(R.id.scrollview);
 
 
         bindViews();
         updateStatusBar();
         startZoomInAnimation(mPhotoView);
-        startContentAnimation(viewGroup);
         return mRootView;
     }
 
@@ -167,20 +167,6 @@ public class ArticleDetailFragment extends Fragment implements
         imgView.startAnimation(zoom_out);
     }
 
-    public void startContentAnimation(ViewGroup viewGroup){
-        final long DEFAULT_ANIMATION_DURATION = 1500L;
-
-        int mScreenHeight = 20;
-
-        // If you only need to animate a single property of a single object use ObjectAnimator
-        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(viewGroup, "translationY",
-                0, -mScreenHeight);
-        // set the duration for the animation and start it.
-        objectAnimator.setDuration(DEFAULT_ANIMATION_DURATION);
-        objectAnimator.setStartDelay(5000L);
-        objectAnimator.start();
-
-    }
 
     private void updateStatusBar() {
         int color = 0;
