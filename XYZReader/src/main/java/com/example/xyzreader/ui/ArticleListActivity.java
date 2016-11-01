@@ -1,7 +1,6 @@
 package com.example.xyzreader.ui;
 
 import android.animation.ValueAnimator;
-import android.annotation.TargetApi;
 import android.app.LoaderManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -12,6 +11,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
@@ -28,6 +28,8 @@ import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
 import com.example.xyzreader.data.ItemsContract;
 import com.example.xyzreader.data.UpdaterService;
+
+import java.util.Random;
 
 /**
  * An activity representing a list of Articles. This activity has different presentations for
@@ -52,10 +54,6 @@ public class ArticleListActivity extends AppCompatActivity implements
 
 
         startLogoAnimation();
-        startListAnimation();
-
-        //final View toolbarContainerView = findViewById(R.id.toolbar_container);
-
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
@@ -66,33 +64,6 @@ public class ArticleListActivity extends AppCompatActivity implements
         }
     }
 
-    private void startListAnimation() {
-
-        ViewGroup root = (ViewGroup) findViewById(R.id.root);
-        int count = root.getChildCount();
-        float offset = getResources().getDimensionPixelSize(R.dimen.offset_y);
-
-        Interpolator interpolator = AnimationUtils.loadInterpolator(this, android.R.interpolator.linear_out_slow_in);
-
-        // loop over the children setting an increasing translation y but the same animation
-        // duration + interpolation
-        for (int i = 0; i < count; i++) {
-            View view = root.getChildAt(i);
-            view.setVisibility(View.VISIBLE);
-            view.setTranslationY(offset);
-            view.setAlpha(0.85f);
-            // then animate back to natural position
-            view.animate()
-                    .translationY(0f)
-                    .alpha(1f)
-                    .setInterpolator(interpolator)
-                    .setDuration(1000L)
-                    .start();
-            // increase the offset distance for the next view
-            offset *= 1.5f;
-        }
-
-    }
 
     private void startLogoAnimation() {
 
@@ -118,7 +89,7 @@ public class ArticleListActivity extends AppCompatActivity implements
                 // current value type is float because you created the ValueAnimator with ofFloat.
                 float value = (float) animation.getAnimatedValue();
                 //Change the image's position by using the setTranslationY().
-                mImageLogo.setTranslationY(value/3);
+                mImageLogo.setTranslationY(value / 3);
             }
         });
 
@@ -173,8 +144,7 @@ public class ArticleListActivity extends AppCompatActivity implements
         adapter.setHasStableIds(true);
         mRecyclerView.setAdapter(adapter);
         int columnCount = getResources().getInteger(R.integer.list_column_count);
-        StaggeredGridLayoutManager sglm =
-                new StaggeredGridLayoutManager(columnCount, StaggeredGridLayoutManager.VERTICAL);
+        StaggeredGridLayoutManager sglm = new StaggeredGridLayoutManager(columnCount, StaggeredGridLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(sglm);
     }
 
@@ -225,6 +195,42 @@ public class ArticleListActivity extends AppCompatActivity implements
                     mCursor.getString(ArticleLoader.Query.THUMB_URL),
                     ImageLoaderHelper.getInstance(ArticleListActivity.this).getImageLoader());
             holder.thumbnailView.setAspectRatio(mCursor.getFloat(ArticleLoader.Query.ASPECT_RATIO));
+
+            startListItemAnimation(holder.cardView);
+        }
+
+        private void startListItemAnimation(CardView cardView) {
+
+            float maxWidthOffset = 2f * getResources().getDisplayMetrics().widthPixels;
+            float maxHeightOffset = 2f * getResources().getDisplayMetrics().heightPixels;
+            Interpolator interpolator = AnimationUtils.loadInterpolator(getApplicationContext(), android.R.interpolator.linear_out_slow_in);
+            Random random = new Random();
+            int count = getItemCount();
+
+            for (int i = 0; i < count; i++) {
+                cardView.setVisibility(View.VISIBLE);
+                cardView.setAlpha(0.85f);
+                float xOffset = random.nextFloat() * maxWidthOffset;
+                if (random.nextBoolean()) {
+                    xOffset *= -1;
+                }
+                cardView.setTranslationX(xOffset);
+                float yOffset = random.nextFloat() * maxHeightOffset;
+                if (random.nextBoolean()) {
+                    yOffset *= -1;
+                }
+                cardView.setTranslationY(yOffset);
+
+                // now animate them back into their natural position
+                cardView.animate()
+                        .translationY(0f)
+                        .translationX(0f)
+                        .alpha(1f)
+                        .setInterpolator(interpolator)
+                        .setDuration(1000)
+                        .start();
+            }
+
         }
 
         @Override
@@ -233,16 +239,18 @@ public class ArticleListActivity extends AppCompatActivity implements
         }
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        public DynamicHeightNetworkImageView thumbnailView;
-        public TextView titleView;
-        public TextView subtitleView;
+     static class ViewHolder extends RecyclerView.ViewHolder {
+         DynamicHeightNetworkImageView thumbnailView;
+         TextView titleView;
+         TextView subtitleView;
+         CardView cardView;
 
-        public ViewHolder(View view) {
+         ViewHolder(View view) {
             super(view);
             thumbnailView = (DynamicHeightNetworkImageView) view.findViewById(R.id.thumbnail);
             titleView = (TextView) view.findViewById(R.id.article_title);
             subtitleView = (TextView) view.findViewById(R.id.article_subtitle);
+            cardView = (CardView) view.findViewById(R.id.card_view);
         }
     }
 }
