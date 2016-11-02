@@ -1,6 +1,5 @@
 package com.example.xyzreader.ui;
 
-import android.animation.ObjectAnimator;
 import android.app.Fragment;
 import android.app.LoaderManager;
 import android.content.Intent;
@@ -158,8 +157,14 @@ public class ArticleDetailFragment extends Fragment implements
 
         bindViews();
         updateStatusBar();
+
+        //animations
         startZoomInAnimation(mPhotoView);
-        startContentAnimation(viewGroup);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            startContentAnimation(viewGroup);
+        }
+
+
         return mRootView;
     }
 
@@ -297,8 +302,10 @@ public class ArticleDetailFragment extends Fragment implements
     private void startContentAnimation(ViewGroup root) {
         int count = root.getChildCount();
         float offset = getResources().getDimensionPixelSize(R.dimen.offset_y);
-        Interpolator interpolator =
-                AnimationUtils.loadInterpolator(getActivity(), android.R.interpolator.linear_out_slow_in);
+        Interpolator interpolator = null;
+
+        interpolator = AnimationUtils.loadInterpolator(getActivity(), android.R.interpolator.linear_out_slow_in);
+
 
         // loop over the children setting an increasing translation y but the same animation
         // duration + interpolation
