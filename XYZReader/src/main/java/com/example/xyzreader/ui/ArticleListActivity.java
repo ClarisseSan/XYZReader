@@ -1,6 +1,5 @@
 package com.example.xyzreader.ui;
 
-import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.app.ActivityOptions;
@@ -19,7 +18,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,7 +43,6 @@ import java.util.Random;
 public class ArticleListActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
-    private Toolbar mToolbar;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private RecyclerView mRecyclerView;
     private ImageView mImageLogo;
@@ -54,9 +51,6 @@ public class ArticleListActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_article_list);
-
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
-
 
         startLogoAnimation();
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
@@ -217,31 +211,6 @@ public class ArticleListActivity extends AppCompatActivity implements
                 startListItemAnimation(holder.cardView);
             }
 
-        }
-
-
-        public void changeSize(View view, View card) {
-
-             final float LARGE_SCALE = 1.5f;
-             boolean symmetric = true;
-             boolean small = true;
-
-            Interpolator interpolator = AnimationUtils.loadInterpolator(mHost, android.R
-                    .interpolator.fast_out_slow_in);
-            ObjectAnimator scaleX = ObjectAnimator.ofFloat(card, View.SCALE_X, (small ? LARGE_SCALE : 1f));
-            scaleX.setInterpolator(interpolator);
-            scaleX.setDuration(symmetric ? 300L : 200L);
-            ObjectAnimator scaleY = ObjectAnimator.ofFloat(card, View.SCALE_Y, (small ? LARGE_SCALE : 1f));
-            scaleY.setInterpolator(interpolator);
-            scaleY.setDuration(300L);
-            scaleX.start();
-            scaleY.start();
-
-            // toggle the state so that we switch between large/small and symmetric/asymmetric
-            small = !small;
-            if (small) {
-                symmetric = !symmetric;
-            }
         }
 
         private void startListItemAnimation(CardView cardView) {
