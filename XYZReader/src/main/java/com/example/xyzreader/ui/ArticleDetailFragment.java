@@ -90,11 +90,9 @@ public class ArticleDetailFragment extends Fragment implements
                 R.dimen.detail_card_top_margin);
         setHasOptionsMenu(true);
 
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             // load appropriate transition
-            getActivity().getWindow().setSharedElementEnterTransition(TransitionInflater.from(getActivity())
-                    .inflateTransition(R.transition.move));
+            getActivity().getWindow().setSharedElementEnterTransition(TransitionInflater.from(getActivity()).inflateTransition(R.transition.move));
         }
     }
 
