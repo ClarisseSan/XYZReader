@@ -3,6 +3,8 @@ XYZ Readers version 1.0 11/04/2016
 
 A mock RSS feed reader featuring banner photos and shocking headlines! 
 
+![list activity](http://d.pr/v/GAif)
+
 ##Project Overview
 In this project, I redesign an app to follow the Material Design guidelines and translate a set of static design mocks to a living and breathing app.
 
